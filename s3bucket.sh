@@ -23,7 +23,7 @@ create_s3(){
 	s3=$(aws s3api create-bucket \
 		--bucket $name \
 		--region $region \
-       		--create-bucket-configuration LocationConstraint=$region)
+       		--create-bucket-configuration LocationConstraint=$region) #by using this command you can  create s3 bucket rest of the region except us-east-1 region, by default the regiuon is us-east-1
 
 	if (bucket_exists "$name"); then
     exit 1
@@ -46,7 +46,7 @@ bucket_exists(){
 main(){
 aws_cli
 echo "Creating s3 bucket"
-name="lastshell22"
+name="enteruniquebucketname33"
 region="eu-west-2"
 create_s3 $name $region
 bucket_exists
