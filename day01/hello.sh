@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# This is script for TWS
+echo "Hello from RHEL"
 
-echo "TWS: Hello Dosto"
+pwd
 
-echo "Learners: DevOps Wale bhaiya , hum toh comment karenge"
+echo "Shell Scripting is working"
 
-echo "TWS: Toh dosto, like bhi kar do"
+date
+echo "RAM:"
+
+free -h
