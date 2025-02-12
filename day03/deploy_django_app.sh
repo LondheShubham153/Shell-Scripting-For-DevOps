@@ -8,7 +8,7 @@ code_clone() {
     if [ -d "django-notes-app" ]; then
         echo "The code directory already exists. Skipping clone."
     else
-        git clone https://github.com/LondheShubham153/django-notes-app.git || {
+        git clone https://github.com/mayurpwr7/django-notes-app.git || {
             echo "Failed to clone the code."
             return 1
         }
