@@ -63,6 +63,11 @@ create_ec2_instance() {
         exit 1
     fi
 
+    if [[ "$instance_name" == "Shell-Script-EC2-Demo" ]]; then
+    echo "Same instance name is present, if you want change name of instance" >&2
+    exit 1
+    fi
+
     echo "Instance $instance_id created successfully."
 
     # Wait for the instance to be in running state
