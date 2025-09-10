@@ -17,6 +17,7 @@ while true; do
 if [[ $EUID -ne 0 ]]; then
   echo "This script must be run as root (sudo)."; exit 1
 fi
+done
 while true; do
 echo -e "${RED}1. Add user${NC}"
 echo -e "${GREEN}2. Delete user${NC}"
@@ -51,9 +52,11 @@ case $choice in
         2)
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". "
 	read -r -p "Select user NUMBER to be deleted: " choice
+	[[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; break; }
 	username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
 	if [[ -z "${username:-}" ]]; then echo "Invalid selection."; else
-	  if [[ "$username" == "$USER" ]]; then echo "Refusing to delete the current user '$USER'."; else
+	    current="${SUDO_USER:-$USER}"
+	    if [[ "$username" == "$current" ]]; then echo "Refusing to delete the current user '$current'."; else
 	    read -r -p "Type the username '$username' to confirm deletion: " confirm
 	    if [[ "$confirm" == "$username" ]]; then
 	      if userdel -r "$username" >/dev/null 2>&1; then
@@ -69,6 +72,7 @@ case $choice in
 	echo "-------------------------------------------------"
 	unset username
 	unset choice
+	unset current
 	;;
 	3)
 	echo "------------------Normal Users List------------------"
