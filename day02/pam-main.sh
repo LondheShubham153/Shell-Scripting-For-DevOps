@@ -52,7 +52,7 @@ case $choice in
         2)
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". "
 	read -r -p "Select user NUMBER to be deleted: " choice
-	[[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; break; }
+	[[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
 	username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
 	if [[ -z "${username:-}" ]]; then echo "Invalid selection."; else
 	    current="${SUDO_USER:-$USER}"
@@ -134,12 +134,12 @@ case $choice in
         6)
         echo "------------------Normal Users List------------------"
         awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". " #Filtering only normal users
-        read -p "Select the existing user: " choice
-	username=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")
-        if getent passwd "$username" > /dev/null; then
-                echo "Changing $username shell to /bin/bash"
-                chsh -s /bin/bash "$username"
-		echo "$username's shell is successfully activated to bash"
+        read -rp "Select the existing user: " choice
+	[[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
+	username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
+	if [[ -n "${username}" ]] && getent passwd "$username" > /dev/null; then
+		echo "Changing $username shell to /bin/bash"
+		usermod -s /bin/bash "$username"
 		echo "---------------------------------------------------"
         else
                 echo "User $username not found!"
