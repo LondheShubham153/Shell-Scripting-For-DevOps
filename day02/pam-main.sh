@@ -97,18 +97,22 @@ case $choice in
         4)
 	echo "------------------Normal Users List------------------"
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". " #Filtering only normal users
-	read -p "Select the existing username: " choice
-	username=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")
-	curr_shell=$(getent passwd "$username" | cut -d: -f7)
-	if [ "$curr_shell" = "/bin/sh" ]; then
-		    chsh -s /bin/bash "$username"
-		    echo "$username's shell is successfully changed to bash"
-		    echo "-------------------------------------------------"
-	elif [ "$curr_shell" = "/bin/bash" ]; then
-		    chsh -s /bin/sh "$username"
-		    echo "$username's shell is successfully changed to sh"
-		    echo "-----------------------------------------------"
-	fi
+	read -r -p "Select the existing user NUMBER: " choice
+    [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
+    username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
+    if [[ -n "${username}" ]]; then
+      curr_shell="$(getent passwd "$username" | cut -d: -f7)"
+      if [[ "$curr_shell" == "/bin/sh" ]]; then
+        usermod -s /bin/bash "$username" && echo "$username's shell changed to bash"
+      elif [[ "$curr_shell" == "/bin/bash" ]]; then
+        usermod -s /bin/sh "$username" && echo "$username's shell changed to sh"
+      else
+        echo "Unsupported current shell: $curr_shell"
+      fi
+    echo "-------------------------------------------------"
+    else
+      echo "Invalid selection."
+    fi
 	unset username
 	unset curr_shell
 	unset choice
