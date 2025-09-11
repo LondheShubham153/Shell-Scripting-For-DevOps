@@ -7,17 +7,16 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 WHITE='\033[1;37m'
-PURPLE='\033[0;35m' 
+PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 echo "------------------------------------------------------"
 echo -e "=======\033[45m Welcome to Login Management System \033[0m======="
 echo "------------------------------------------------------"
-while true; do
 if [[ $EUID -ne 0 ]]; then
-  echo "This script must be run as root (sudo)."; exit 1
+  echo "This script must be run as root (sudo)."
+  exit 1
 fi
-done
 while true; do
 echo -e "${RED}1. Add user${NC}"
 echo -e "${GREEN}2. Delete user${NC}"
@@ -78,7 +77,7 @@ case $choice in
 	echo "------------------Normal Users List------------------"
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". " #Filtering only normal users
 	echo "------------------Group List-------------------------"
-        getent group | awk -F: '{print $1}' | nl -w1 -s". "
+        getent group | awk -F: '$3 >= 1000 {print $1}' | nl -w1 -s". "
 	read -p "Select the existing user NUMBER: " choice
 	read -p "Select the group NUMBER to be added: " gchoice
 	username=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")
