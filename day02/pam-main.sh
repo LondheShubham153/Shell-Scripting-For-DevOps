@@ -179,14 +179,16 @@ case $choice in
 	mkdir -p /opt/dir_backups
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". "
 	read -r -p "Select the user NUMBER to associate with the backup: " choice
+        [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
 	username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
+        [[ -n "${username:-}" ]] || { echo "Invalid selection."; continue; }
 	read -r -p "Specify the absolute path of the directory to be backed up: " dirback
-	if [[ -d "$dirback" ]]; then
+        if [[ "$dirback" = /* && -d "$dirback" && -r "$dirback" ]]; then
 	  ts="$(date +%F_%H-%M-%S)"
 	  tar -czf "/opt/dir_backups/${username}_$ts.tar.gz" -C "$dirback" . >/dev/null 2>&1 && \
 	    echo "Backup completed successfully" || echo "Backup failed"
 	else
-	  echo "Directory '$dirback' not found."
+	  echo "Invalid directory: '$dirback'. Provide an existing absolute path."
 	fi
 	echo "-----------------------------"
 	unset username
