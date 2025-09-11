@@ -40,6 +40,7 @@ case $choice in
 	  randpass="$(openssl rand -base64 14 2>/dev/null || tr -dc 'A-Za-z0-9!@#%+=' </dev/urandom | head -c16)"
 	  printf '%s:%s\n' "$username" "$randpass" | chpasswd
 	  passwd --expire "$username" >/dev/null
+          chage -M 0 "$username" >/dev/null 2>&1
 	  echo "$username created. Temporary password: $randpass (will be forced to change on first login)"
 	else
 	  echo "Failed to create user '$username'."
@@ -99,21 +100,21 @@ case $choice in
 	echo "------------------Normal Users List------------------"
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". " #Filtering only normal users
 	read -r -p "Select the existing user NUMBER: " choice
-    [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
-    username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
-    if [[ -n "${username}" ]]; then
-      curr_shell="$(getent passwd "$username" | cut -d: -f7)"
-      if [[ "$curr_shell" == "/bin/sh" ]]; then
-        usermod -s /bin/bash "$username" && echo "$username's shell changed to bash"
-      elif [[ "$curr_shell" == "/bin/bash" ]]; then
-        usermod -s /bin/sh "$username" && echo "$username's shell changed to sh"
-      else
-        echo "Unsupported current shell: $curr_shell"
-      fi
-    echo "-------------------------------------------------"
-    else
-      echo "Invalid selection."
-    fi
+        [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
+        username="$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")"
+        if [[ -n "${username}" ]]; then
+          curr_shell="$(getent passwd "$username" | cut -d: -f7)"
+          if [[ "$curr_shell" == "/bin/sh" ]]; then
+            usermod -s /bin/bash "$username" && echo "$username's shell changed to bash"
+          elif [[ "$curr_shell" == "/bin/bash" ]]; then
+           usermod -s /bin/sh "$username" && echo "$username's shell changed to sh"
+          else
+          echo "Unsupported current shell: $curr_shell"
+          fi
+        echo "-------------------------------------------------"
+        else
+          echo "Invalid selection."
+        fi
 	unset username
 	unset curr_shell
 	unset choice
@@ -121,9 +122,10 @@ case $choice in
         5)
 	echo "------------------Normal Users List------------------"
 	awk -F: '$3 >= 1000 {print $1}' /etc/passwd | nl -w1 -s". " #Filtering only normal users
-	read -p "Select the existing username: " choice
+	read -r -p "Select the existing user NUMBER: " choice
+        [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
 	username=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")
-	if getent passwd "$username" > /dev/null; then
+	if [[ -n "${username:-}" ]] && getent passwd "$username" > /dev/null; then
 		nologin_path="$(command -v nologin || echo /sbin/nologin)"
 		echo "Changing $username shell to $nologin_path"
 		usermod -s "$nologin_path" "$username"
