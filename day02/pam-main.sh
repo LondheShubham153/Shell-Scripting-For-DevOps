@@ -80,10 +80,12 @@ case $choice in
 	echo "------------------Group List-------------------------"
         getent group | awk -F: '{print $1}' | nl -w1 -s". "
 	read -p "Select the existing user NUMBER: " choice
+    [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
 	read -p "Select the group NUMBER to be added: " gchoice
+    [[ "$choice" =~ ^[0-9]+$ ]] || { echo "Invalid selection."; continue; }
 	username=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | sed -n "${choice}p")
 	grpname=$(awk -F: '$3 >= 1000 {print $1}' /etc/group | sed -n "${gchoice}p")
-        if [[ -n "${username:-}" && -n "${grpname:-}" ]]; then
+    if [[ -n "${username}" && -n "${grpname}" ]]; then
 	  usermod -aG "$grpname" "$username" && echo "$username added to group $grpname"
 	else
 	  echo "Invalid selection."
