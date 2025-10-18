@@ -21,6 +21,51 @@
   - Looping (`for`, `while`, `until`)
 - Functions in Shell Scripts  
 - Exit Codes and Status (`$?`, `exit` command)
+- Basic codes(Executing your first shell scripts)
+- Writing Your First Shell Script (.sh file, shebang #!/bin/bash)
+
+#!/bin/bash
+# hello.sh - Simple Hello World Script
+
+echo "Hello, World!"
+
+
+Explanation:
+#!/bin/bash → Tells the system to use the Bash interpreter.
+echo → Prints text to the terminal.
+
+Run it:
+chmod +x hello.sh
+./hello.sh
+
+Output:
+Hello, World!
+
+if-else Example (Odd or Even Number)
+Control Flow → Conditional Statements (if-else, case)
+
+#!/bin/bash
+# odd_even.sh - Check whether a number is odd or even
+read -p "Enter a number: " num
+if (( num % 2 == 0 )); then
+    echo "$num is Even."
+else
+    echo "$num is Odd."
+fi
+
+
+Explanation:
+
+read -p → Reads user input with a prompt.
+
+(( ... )) → Performs arithmetic evaluation.
+
+if-else-fi → Standard shell conditional structure.
+
+Sample Run:
+
+Enter a number: 9
+9 is Odd.
 
 ## 3. Intermediate Scripting Techniques
 - Working with Files and Directories (`ls`, `cp`, `mv`, `rm`, `mkdir`, `find`)
