@@ -1,0 +1,4 @@
+timestamp,level,component,message
+2025-02-08T08:00:01Z,INFO,System,Startup complete
+2025-02-08T08:05:12Z,WARN,Database,Slow query detected
+2025-02-08T08:10:00Z,ERROR,Auth,Login failed: user123
