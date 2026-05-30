@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# This is script for TWS
+echo "Hello everyone"
 
-echo "TWS: Hello Dosto"
+echo "Welcome to my site"
 
-echo "Learners: DevOps Wale bhaiya , hum toh comment karenge"
+echo "We are learning shell scripting here!"
 
-echo "TWS: Toh dosto, like bhi kar do"
