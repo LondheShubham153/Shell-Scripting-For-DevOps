@@ -1,75 +1,75 @@
 #!/bin/bash
 
-# Deploy a Django app and handle errors
 
-# Function to clone the Django app code
-code_clone() {
-    echo "Cloning the Django app..."
-    if [ -d "django-notes-app" ]; then
-        echo "The code directory already exists. Skipping clone."
-    else
-        git clone https://github.com/LondheShubham153/django-notes-app.git || {
-            echo "Failed to clone the code."
-            return 1
-        }
-    fi
+<< task
+deploy django app
+and handle errors
+task
+
+
+#Function to clone the django app
+code_clone(){
+
+        echo "Cloning the Django app..."
+        git clone https://github.com/LondheShubham153/django-notes-app.git
 }
 
-# Function to install required dependencies
-install_requirements() {
-    echo "Installing dependencies..."
-    sudo apt-get update && sudo apt-get install -y docker.io nginx docker-compose || {
-        echo "Failed to install dependencies."
-        return 1
-    }
+#Function to install required dependencies
+install_req() {
+
+        echo " Installing dependencies..."
+        sudo apt-get install docker.io nginx -y docker-compose
 }
 
-# Function to perform required restarts
-required_restarts() {
-    echo "Performing required restarts..."
-    sudo chown "$USER" /var/run/docker.sock || {
-        echo "Failed to change ownership of docker.sock."
-        return 1
-    }
+#Function to perform required restarts
+req_restarts() {
 
-    # Uncomment the following lines if needed:
-    # sudo systemctl enable docker
-    # sudo systemctl enable nginx
-    # sudo systemctl restart docker
+        echo "Performing required restarts"
+
+        sudo chown $USER /var/run/docker.sock
+        #sudo systemctl enable docker
+        #sudo systemctl enable nginx
+        #sudo systemctl restart docker
 }
 
-# Function to deploy the Django app
-deploy() {
-    echo "Building and deploying the Django app..."
-    docker build -t notes-app . && docker-compose up -d || {
-        echo "Failed to build and deploy the app."
-        return 1
-    }
+#Fucntion to deploy Django app
+deploy(){
+        echo "Building and Deploying Django app..."    #Fixed deployment : Old networks from previous runs had different settings, causing the new deployment to crash.
+	                                               #Added docker-compose down to the start of the deploy function to wipe the slate clean.
+        docker-compose down
+        docker build -t notes-app .
+        docker-compose up -d
 }
 
-# Main deployment script
-echo "********** DEPLOYMENT STARTED *********"
+echo "***************** DEPLOYMENT STARTED ******************"
 
-# Clone the code
-if ! code_clone; then
-    cd django-notes-app || exit 1
+if ! code_clone;
+then
+        echo "directory already exists, skipping cloning...."
 fi
 
-# Install dependencies
-if ! install_requirements; then
-    exit 1
+#Moved cd outside the logic so it always enters the app folder before building.
+ cd django-notes-app || { echo "Failed to enter directory" ; exit 1; }
+
+
+if ! install_req;
+then
+        echo "Failed to install requirements"
+        exit 1
 fi
 
-# Perform required restarts
-if ! required_restarts; then
-    exit 1
+
+if ! req_restarts;
+then
+        echo "System fault identitfied"
+        exit 1
 fi
 
-# Deploy the app
-if ! deploy; then
-    echo "Deployment failed. Mailing the admin..."
-    # Add your sendmail or notification logic here
-    exit 1
+if ! deploy;
+then
+        echo "Deployment Failed"
+        # sendmail
+        exit 1
 fi
 
-echo "********** DEPLOYMENT DONE *********"
+echo "***************** DEPLOYMENT DONE ******************"
