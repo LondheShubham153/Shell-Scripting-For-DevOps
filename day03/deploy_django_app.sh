@@ -3,33 +3,22 @@
 # Deploy a Django app and handle errors
 
 # Function to clone the Django app code
-code_clone() {
+clone() {
     echo "Cloning the Django app..."
-    if [ -d "django-notes-app" ]; then
-        echo "The code directory already exists. Skipping clone."
-    else
-        git clone https://github.com/LondheShubham153/django-notes-app.git || {
-            echo "Failed to clone the code."
-            return 1
-        }
-    fi
+        git clone https://github.com/LondheShubham153/django-notes-app.git 
+        
 }
 
 # Function to install required dependencies
-install_requirements() {
+install() {
     echo "Installing dependencies..."
-    sudo apt-get update && sudo apt-get install -y docker.io nginx docker-compose || {
-        echo "Failed to install dependencies."
-        return 1
-    }
+    sudo apt-get update && sudo apt-get install -y docker.io nginx docker-compose-v2
 }
 
 # Function to perform required restarts
-required_restarts() {
+restart() {
     echo "Performing required restarts..."
-    sudo chown "$USER" /var/run/docker.sock || {
-        echo "Failed to change ownership of docker.sock."
-        return 1
+    #sudo chown "$USER" /var/run/docker.sock 
     }
 
     # Uncomment the following lines if needed:
@@ -41,27 +30,30 @@ required_restarts() {
 # Function to deploy the Django app
 deploy() {
     echo "Building and deploying the Django app..."
-    docker build -t notes-app . && docker-compose up -d || {
-        echo "Failed to build and deploy the app."
-        return 1
-    }
+    docker build -t notes-app . 
+    docker run notes-app
+    #docker compose up 
+    
 }
 
 # Main deployment script
 echo "********** DEPLOYMENT STARTED *********"
 
 # Clone the code
-if ! code_clone; then
+if ! clone; then
+echo "cloning failed"
     cd django-notes-app || exit 1
 fi
 
 # Install dependencies
-if ! install_requirements; then
+if ! install; then
+echo "install failed"
     exit 1
 fi
 
 # Perform required restarts
-if ! required_restarts; then
+if ! restarts; then
+echo"restart failed"
     exit 1
 fi
 
