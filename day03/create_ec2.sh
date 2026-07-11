@@ -1,13 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
+#check if AWS CLI already installed or not
+
 check_awscli() {
     if ! command -v aws &> /dev/null; then
         echo "AWS CLI is not installed. Please install it first." >&2
         exit 1
     fi
 }
-
+#install AWS CLI 
 install_awscli() {
     echo "Installing AWS CLI v2 on Linux..."
 
@@ -37,7 +39,7 @@ wait_for_instance() {
         sleep 10
     done
 }
-
+# here these $ with 1,2,3,4,5,6 are arguments 
 create_ec2_instance() {
     local ami_id="$1"
     local instance_type="$2"
